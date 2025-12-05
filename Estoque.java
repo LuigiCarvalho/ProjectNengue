@@ -1,15 +1,23 @@
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 
 public class Estoque {
-    private HashMap<String, Produto> produtos = new HashMap<>();
+    private HashMap<String, Produto> produtos;
     private final String caminhoArquivo;
+
+    public Estoque(){
+      this.caminhoArquivo = "Estoque.csv";
+      this.produtos       =  new HashMap<>();
+      salvar();
+    }
 
     public Estoque(String caminhoArquivo) {
         this.caminhoArquivo = caminhoArquivo;
+        this.produtos       =  new HashMap<>();
         carregar();
     }
 
@@ -22,13 +30,15 @@ public class Estoque {
             Scanner scanner = new Scanner(arquivo);
             scanner.nextLine(); // cabeçalho
             String linha;
-            while ((linha = scanner.nextLine()) != null) {
+            while (scanner.hasNextLine()) {
+                linha = scanner.nextLine();
                 Produto p = Produto.deCSV(linha);
                 produtos.put(p.getId(), p);
             }
             scanner.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Arquivo de estoque nao encontrado! Criando arquivo no caminho especificado");
+            salvar();
         }
     }
 
@@ -73,4 +83,9 @@ public class Estoque {
                     p.getId(), p.getNome(), p.getQuantidade(), p.getPreco());
         }
     }
+
+    public Collection<Produto> getTodos() {
+        return produtos.values();
+    }
+
 }
